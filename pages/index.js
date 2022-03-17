@@ -1,14 +1,29 @@
+import { useState } from 'react'
 import tw from 'tailwind-styled-components'
 import Chart from '../components/chart'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
 
 export default function Home() {
+  const [birthDate, setBirthDate] = useState(new Date())
+
   return (
     <Wrapper>
       <Title>Biological Clock</Title>
       <DescriptionContainer>Description</DescriptionContainer>
-      <InputContainer>Date input</InputContainer>
+      <InputContainer>
+        <DatePicker
+          selected={birthDate}
+          onChange={(date) => setBirthDate(date)}
+          peekNextMonth
+          showMonthDropdown
+          showYearDropdown
+          dropdownMode='select'
+          wrapperClassName='date-picker'
+        />
+      </InputContainer>
       <ChartContainer>
-        <Chart />
+        <Chart birthDate={birthDate.valueOf()} />
       </ChartContainer>
     </Wrapper>
   )

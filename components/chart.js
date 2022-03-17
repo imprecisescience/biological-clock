@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react'
+import React, { PureComponent, useEffect } from 'react'
 import {
   AreaChart,
   Area,
@@ -8,6 +8,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts'
+import { v4 as uuid } from 'uuid'
 
 const data = [
   {
@@ -55,6 +56,22 @@ const data = [
 ]
 
 const Chart = ({ birthDate }) => {
+  const generateTimeSeries = () => {
+    let dataSeries = []
+    const oneDay = 1000 * 60 * 60 * 24
+    const startDate = new Date().valueOf() - oneDay * 30 // 30 days ago
+    const endDate = startDate + oneDay * 60 // 30 days after today
+
+    for (let i = startDate; i <= endDate; i + oneDay) {
+      dataSeries.push({ id: uuid(), date: i })
+      i += oneDay
+    }
+  }
+
+  useEffect(() => {
+    generateTimeSeries()
+  }, [])
+
   return (
     <div style={{ width: '100%' }}>
       <h4>A demo of synchronized AreaCharts</h4>
