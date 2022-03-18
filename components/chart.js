@@ -1,5 +1,7 @@
-import React, { PureComponent, useEffect } from 'react'
+import { PureComponent, useEffect, useState } from 'react'
 import {
+  Scatter,
+  ScatterChart,
   AreaChart,
   Area,
   XAxis,
@@ -56,21 +58,29 @@ const data = [
 ]
 
 const Chart = ({ birthDate }) => {
+  const [dataSeries, setDataSeries] = useState([])
+
   const generateTimeSeries = () => {
-    let dataSeries = []
     const oneDay = 1000 * 60 * 60 * 24
     const startDate = new Date().valueOf() - oneDay * 30 // 30 days ago
     const endDate = startDate + oneDay * 60 // 30 days after today
 
-    for (let i = startDate; i <= endDate; i + oneDay) {
-      dataSeries.push({ id: uuid(), date: i })
+    let newDataSeries = []
+    let i = startDate
+    while (i <= endDate) {
+      const daysFromBirth = (i - birthDate) / oneDay
+      const physical = 10 * Math.sin(((2 * Math.PI) / 23) * daysFromBirth)
+      const emotion = 10 * Math.sin(((2 * Math.PI) / 28) * daysFromBirth)
+      const iq = 10 * Math.sin(((2 * Math.PI) / 33) * daysFromBirth)
+      newDataSeries.push({ id: uuid(), date: i, physical, emotion, iq })
       i += oneDay
     }
+    setDataSeries(newDataSeries)
   }
 
   useEffect(() => {
     generateTimeSeries()
-  }, [])
+  }, [birthDate])
 
   return (
     <div style={{ width: '100%' }}>
@@ -116,6 +126,27 @@ const Chart = ({ birthDate }) => {
           <Tooltip />
           <Area type='monotone' dataKey='pv' stroke='#82ca9d' fill='#82ca9d' />
         </AreaChart>
+      </ResponsiveContainer>
+
+      <ResponsiveContainer width='100%' height={500}>
+        <ScatterChart>
+          <XAxis
+            dataKey='date'
+            domain={['auto', 'auto']}
+            name='Time'
+            type='number'
+          />
+          <YAxis dataKey='physical' name='Value' />
+          <Scatter
+            data={dataSeries}
+            line={{ stroke: '#d3d3d3' }}
+            lineType='joint'
+            lineJointType='monotoneX'
+            name='Values'
+          />
+          <Tooltip />
+          <CartesianGrid strokeDasharray='3 3' />
+        </ScatterChart>
       </ResponsiveContainer>
     </div>
   )

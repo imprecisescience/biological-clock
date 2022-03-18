@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import tw from 'tailwind-styled-components'
 import Chart from '../components/chart'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
+import { v4 as uuid } from 'uuid'
 
 export default function Home() {
   const [birthDate, setBirthDate] = useState(new Date())
