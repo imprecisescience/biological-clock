@@ -31,7 +31,7 @@ export default function Home() {
 }
 
 const Wrapper = tw.div`
-bg-sky-100 h-screen flex flex-col items-center
+bg-sky-100 flex flex-col items-center
 `
 const Title = tw.div`
 text-gray-800 text-4xl font-bold tracking-wide uppercase py-8
@@ -40,4 +40,6 @@ const DescriptionContainer = tw.div``
 
 const InputContainer = tw.div``
 
-const ChartContainer = tw.div``
+const ChartContainer = tw.div`
+w-screen p-8
+`
