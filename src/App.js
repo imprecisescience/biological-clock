@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import tw from 'tailwind-styled-components'
-import Chart from '../components/chart'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
-import { v4 as uuid } from 'uuid'
+import Chart from './components/chart'
 
-export default function Home() {
+function App() {
   const [birthDate, setBirthDate] = useState(new Date())
 
   return (
@@ -29,6 +28,8 @@ export default function Home() {
     </Wrapper>
   )
 }
+
+export default App
 
 const Wrapper = tw.div`
 bg-sky-100 flex flex-col items-center
