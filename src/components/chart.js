@@ -1,20 +1,19 @@
-import { useEffect, useState } from 'react'
-import { v4 as uuid } from 'uuid'
-import ReactHighcharts from 'react-highcharts/ReactHighstock.src'
+import { useEffect, useState, useRef } from 'react'
+import Highcharts from 'highcharts/highstock'
+import HighchartsReact from 'highcharts-react-official'
 import tw from 'tailwind-styled-components'
 
 const Chart = ({ birthDate }) => {
   const [physicalData, setPhysicalData] = useState([])
   const [emotionData, setEmotionData] = useState([])
   const [iqData, setIqData] = useState([])
-  const [chartConfig, setChartConfig] = useState({
+  const [chartOptions, setChartOptions] = useState({
     yAxis: [
       {
         offset: 20,
-
         labels: {
           formatter: function () {
-            return this.value.toFixed(0)
+            return parseFloat(this.value).toFixed(0)
           },
           x: -15,
           style: {
@@ -29,7 +28,15 @@ const Chart = ({ birthDate }) => {
       shared: true,
       formatter: function () {
         return (
-          this.value.toFixed(0) + '</b><br/>' + new Date(this.x).toDateString()
+          '<b>' +
+          new Date(this.x).toISOString().slice(0, 10) +
+          '</b><br/>Physical: ' +
+          this.points[0].y.toFixed(0) +
+          '<br/>Emotion: ' +
+          this.points[1].y.toFixed(0) +
+          '<br/>IQ: ' +
+          this.points[2].y.toFixed(0) +
+          '<br/>'
         )
       },
     },
@@ -39,62 +46,91 @@ const Chart = ({ birthDate }) => {
         gapSize: 6,
       },
     },
-    rangeSelector: {
-      selected: 1,
-    },
     title: {
       text: ``,
     },
     chart: {
-      height: 600,
+      height: 400,
     },
-
     credits: {
       enabled: false,
     },
-
     legend: {
-      enabled: true,
+      enabled: false,
     },
     xAxis: {
       type: 'date',
+      labels: { format: '{value:%Y-%m-%d}' },
     },
     rangeSelector: {
       buttons: [
         {
-          type: 'day',
-          count: 1,
-          text: '1d',
-        },
-        {
-          type: 'day',
-          count: 7,
-          text: '7d',
-        },
-        {
           type: 'month',
           count: 1,
           text: '1m',
+          title: 'View 1 month',
         },
         {
           type: 'month',
           count: 3,
           text: '3m',
+          title: 'View 3 months',
+        },
+        {
+          type: 'month',
+          count: 6,
+          text: '6m',
+          title: 'View 6 months',
+        },
+        {
+          type: 'ytd',
+          text: 'YTD',
+          title: 'View year to date',
+        },
+        {
+          type: 'year',
+          count: 1,
+          text: '1y',
+          title: 'View 1 year',
         },
         {
           type: 'all',
           text: 'All',
+          title: 'View all',
         },
       ],
-      selected: 4,
+      selected: 2,
     },
-    series: [],
+    series: [
+      {
+        name: 'Physical',
+        type: 'areaspline',
+
+        data: physicalData,
+      },
+      {
+        name: 'Emotion',
+        type: 'areaspline',
+
+        data: emotionData,
+      },
+      {
+        name: 'IQ',
+        type: 'areaspline',
+
+        data: iqData,
+      },
+    ],
   })
 
   const generateTimeSeries = () => {
     const oneDay = 1000 * 60 * 60 * 24
     const startDate = birthDate // 30 days ago
-    const endDate = startDate + oneDay * 60 // 30 days after today
+    const endDate = new Date().valueOf() + oneDay * 60 // 30 days after today
+
+    console.log('generateTimeSeries')
+    console.log('start = ' + new Date(startDate).toISOString().slice(0, 10))
+    console.log('end = ' + new Date(endDate).toISOString().slice(0, 10))
 
     let newPhysicalData = []
     let newEmotionData = []
@@ -114,118 +150,30 @@ const Chart = ({ birthDate }) => {
     setPhysicalData(newPhysicalData)
     setEmotionData(newEmotionData)
     setIqData(newIqData)
-  }
 
-  const configPrice = {
-    yAxis: [
-      {
-        offset: 20,
+    setChartOptions({
+      ...chartOptions,
+      series: [
+        {
+          name: 'Physical',
+          type: 'areaspline',
 
-        labels: {
-          formatter: function () {
-            return this.value.toFixed(0)
-          },
-          x: -15,
-          style: {
-            color: '#000',
-            position: 'absolute',
-          },
-          align: 'left',
+          data: newPhysicalData,
         },
-      },
-    ],
-    tooltip: {
-      shared: true,
-      formatter: function () {
-        return (
-          this.value.toFixed(0) + '</b><br/>' + new Date(this.x).toDateString()
-        )
-      },
-    },
-    plotOptions: {
-      series: {
-        showInNavigator: true,
-        gapSize: 6,
-      },
-    },
-    rangeSelector: {
-      selected: 1,
-    },
-    title: {
-      text: ``,
-    },
-    chart: {
-      height: 600,
-    },
+        {
+          name: 'Emotion',
+          type: 'areaspline',
 
-    credits: {
-      enabled: false,
-    },
+          data: newEmotionData,
+        },
+        {
+          name: 'IQ',
+          type: 'areaspline',
 
-    legend: {
-      enabled: true,
-    },
-    xAxis: {
-      type: 'date',
-    },
-    rangeSelector: {
-      buttons: [
-        {
-          type: 'day',
-          count: 1,
-          text: '1d',
-        },
-        {
-          type: 'day',
-          count: 7,
-          text: '7d',
-        },
-        {
-          type: 'month',
-          count: 1,
-          text: '1m',
-        },
-        {
-          type: 'month',
-          count: 3,
-          text: '3m',
-        },
-        {
-          type: 'all',
-          text: 'All',
+          data: newIqData,
         },
       ],
-      selected: 4,
-    },
-    series: [
-      {
-        name: 'Physical',
-        type: 'areaspline',
-
-        data: physicalData,
-        tooltip: {
-          valueDecimals: 0,
-        },
-      },
-      {
-        name: 'Emotion',
-        type: 'areaspline',
-
-        data: emotionData,
-        tooltip: {
-          valueDecimals: 0,
-        },
-      },
-      {
-        name: 'IQ',
-        type: 'areaspline',
-
-        data: iqData,
-        tooltip: {
-          valueDecimals: 0,
-        },
-      },
-    ],
+    })
   }
 
   useEffect(() => {
@@ -234,7 +182,11 @@ const Chart = ({ birthDate }) => {
 
   return (
     <Wrapper>
-      <ReactHighcharts config={configPrice}></ReactHighcharts>
+      <HighchartsReact
+        highcharts={Highcharts}
+        options={chartOptions}
+        constructorType={'stockChart'}
+      />
     </Wrapper>
   )
 }
@@ -242,5 +194,5 @@ const Chart = ({ birthDate }) => {
 export default Chart
 
 const Wrapper = tw.div`
-w-full
+
 `
