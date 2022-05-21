@@ -78,6 +78,10 @@ function App() {
           />
         </ChartContainer>
       </MainContainer>
+      <Footer>
+        Copyrights (c) 2022 |
+        <a href="https://www.youtube.com/c/非精密科學">非精密科學</a>
+      </Footer>
     </Wrapper>
   );
 }
@@ -117,4 +121,8 @@ cursor-pointer pr-12 text-gray-400
 
 const List = tw.ul`
 list-disc
+`;
+
+const Footer = tw.div`
+  text-sm text-gray-400 py-4
 `;
